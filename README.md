@@ -25,8 +25,10 @@ This project is a user-friendly application for file encryption and decryption u
 │
 ├── /gui_module.py           # GUI for password creation and validation
 ├── /encryption_gui.py       # GUI for file encryption and decryption
+├── /encryption_module.py    # contains encryption functions
 ├── /password_checker.py     # Password strength checking and suggestions
 ├── /main.py                 # Main entry point to the program
+├── /user_auth.py            # Login creation and validation
 └── README.md                # This readme file
 ```
 
