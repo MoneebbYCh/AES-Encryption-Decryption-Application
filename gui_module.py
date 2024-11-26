@@ -1,100 +1,117 @@
 import tkinter as tk
 from tkinter import messagebox, ttk
 from password_checker import check_password_strength, suggest_password, get_checklist
+from user_auth import update_password
+import os
 
-def create_gui(on_password_set=None):
-    
-    def submit_password():
-        password = password_entry.get()
-        confirm_password = confirm_password_entry.get()
-        if password != confirm_password:
-            messagebox.showerror("Error", "Passwords do not match!")
-        elif check_password_strength(password) != "Strong":
-            messagebox.showwarning("Warning", "Please choose a strong password.")
+def create_gui(username, on_password_set=None, on_key_set=None):
+    def submit_key():
+        key = password_entry.get()
+        confirm_key = confirm_password_entry.get()
+        if key != confirm_key:
+            messagebox.showerror("Error", "Keys do not match!")
+        elif check_password_strength(key) != "Strong":
+            messagebox.showwarning("Warning", "Please choose a strong key.")
         else:
-            messagebox.showinfo("Success", "Password created successfully!")
-            if on_password_set:  # Check if callback is provided and call it with the password
-                on_password_set(password)  # Call the callback function with the password
-            root.destroy()  # Close the current GUI window
+            messagebox.showinfo("Success", "Key created successfully!")
+            
+            # Save the key to the user's keys file
+            save_key_to_file(username, key)
+            
+            if on_key_set:  # If the key is set successfully, use the callback to pass the key.
+                on_key_set(key)
+            
+            root.destroy()  # Close the profile setup window to transition to the encryption GUI
+
+    def save_key_to_file(username, key):
+        """Appends the key to the user's keys file."""
+        file_path = f'keys_{username}.txt'
+        with open(file_path, 'a') as file:
+            file.write(f"{key}\n")  # Save the key with a newline for separation
+    
+    def load_previous_keys(username):
+        """Loads previous keys from the user's keys file."""
+        file_path = f'keys_{username}.txt'
+        if os.path.exists(file_path):
+            with open(file_path, 'r') as file:
+                return file.readlines()  # Read the keys from the file
+        return []  # Return an empty list if no file exists
 
     def check_strength(event=None):
-        password = password_entry.get()
-        strength = check_password_strength(password)
-        strength_label.config(text=f"Password Strength: {strength}")
-
-        checklist = get_checklist(password)
+        key = password_entry.get()
+        strength = check_password_strength(key)
+        strength_label.config(text=f"Key Strength: {strength}")
+        checklist = get_checklist(key)
         checklist_text = "\n".join([f"{'✔' if valid else '✖'} {text}" for text, valid in checklist])
         checklist_label.config(text=checklist_text)
 
-    def use_suggested_password():
-        new_suggested_password = suggest_password()
+    def use_suggested_key():
+        new_suggested_key = suggest_password()  # Generate suggested password
         password_entry.delete(0, tk.END)
-        password_entry.insert(0, new_suggested_password)
+        password_entry.insert(0, new_suggested_key)
         confirm_password_entry.delete(0, tk.END)
-        confirm_password_entry.insert(0, new_suggested_password)
-        strength_label.config(text="Password Strength: Strong")
-        check_strength()
+        confirm_password_entry.insert(0, new_suggested_key)
+        strength_label.config(text="Key Strength: Strong")
+        check_strength()  # Check the strength of the suggested password
 
-    def generate_new_suggested_password():
-        new_suggested_password = suggest_password()
-        suggestion_label.config(text=f"Suggested Password: {new_suggested_password}")
-
-    def toggle_password_visibility(entry, button):
-        if entry.cget('show') == '*':
-            entry.config(show='')
-            button.config(text='👁️')
-        else:
-            entry.config(show='*')
-            button.config(text='🙈')
-
+    # Create the main GUI window
     root = tk.Tk()
-    root.title("Password Creation")
+    root.title(f"Profile - {username}")  # Show username in title bar
     root.geometry("800x600")
-    root.configure(bg="#2e2e2e")
+    root.configure(bg="white")  # Set background color to white
 
-    header_frame = tk.Frame(root, bg="#1e1e1e", padx=10, pady=10)
-    header_frame.pack(fill='x')
-    header_label = tk.Label(header_frame, text="Password Creation", font=("Helvetica", 24, "bold"), fg="white", bg="#1e1e1e")
-    header_label.pack()
+    # GUI for setting, viewing, and updating key
+    header_label = tk.Label(root, text=f"Profile - {username}", font=("Helvetica", 24, "bold"), fg="black", bg="white")
+    header_label.pack(pady=20)
 
-    container = ttk.Frame(root, padding="20")
-    container.pack(expand=True, fill='both')
-
-    suggestion_label = ttk.Label(container, text=f"Suggested Password: {suggest_password()}", font=("Arial", 12))
-    suggestion_label.grid(row=0, column=0, columnspan=3, pady=5, sticky='w')
-    generate_new_button = ttk.Button(container, text="Generate New Password", command=generate_new_suggested_password)
-    generate_new_button.grid(row=1, column=0, columnspan=1, pady=5, sticky='w')
-    use_suggested_button = ttk.Button(container, text="Use Suggested Password", command=use_suggested_password)
-    use_suggested_button.grid(row=1, column=1, columnspan=1, pady=5, sticky='w', padx=(10, 0))
-
-    password_label = ttk.Label(container, text="Enter Password:", font=("Arial", 14))
-    password_label.grid(row=2, column=0, pady=10, sticky='e')
-    password_entry_frame = ttk.Frame(container)
-    password_entry_frame.grid(row=2, column=1, columnspan=2, sticky='w')
-    password_entry = ttk.Entry(password_entry_frame, show="*", width=30, font=("Arial", 12))
-    password_entry.pack(side='left')
+    key_label = ttk.Label(root, text="Enter New Key:", font=("Arial", 14))
+    key_label.pack(pady=5)
+    password_entry = ttk.Entry(root, show="*", font=("Arial", 12), width=30)
+    password_entry.pack(pady=5)
     password_entry.bind("<KeyRelease>", check_strength)
-    toggle_password_button = ttk.Button(password_entry_frame, text="🙈", command=lambda: toggle_password_visibility(password_entry, toggle_password_button))
-    toggle_password_button.pack(side='left', padx=5)
 
-    confirm_password_label = ttk.Label(container, text="Confirm Password:", font=("Arial", 14))
-    confirm_password_label.grid(row=3, column=0, pady=10, sticky='e')
-    confirm_password_entry_frame = ttk.Frame(container)
-    confirm_password_entry_frame.grid(row=3, column=1, columnspan=2, sticky='w')
-    confirm_password_entry = ttk.Entry(confirm_password_entry_frame, show="*", width=30, font=("Arial", 12))
-    confirm_password_entry.pack(side='left')
-    toggle_confirm_password_button = ttk.Button(confirm_password_entry_frame, text="🙈", command=lambda: toggle_password_visibility(confirm_password_entry, toggle_confirm_password_button))
-    toggle_confirm_password_button.pack(side='left', padx=5)
+    confirm_key_label = ttk.Label(root, text="Confirm New Key:", font=("Arial", 14))
+    confirm_key_label.pack(pady=5)
+    confirm_password_entry = ttk.Entry(root, show="*", font=("Arial", 12), width=30)
+    confirm_password_entry.pack(pady=5)
 
-    strength_label = ttk.Label(container, text="Password Strength: ", font=("Arial", 14))
-    strength_label.grid(row=4, column=0, columnspan=3, pady=10, sticky='w')
+    strength_label = ttk.Label(root, text="Key Strength:", font=("Arial", 14))
+    strength_label.pack(pady=5)
 
-    checklist_label = ttk.Label(container, text="", font=("Arial", 12))
-    checklist_label.grid(row=5, column=0, columnspan=3, pady=10, sticky='w')
+    checklist_label = ttk.Label(root, text="", font=("Arial", 12))
+    checklist_label.pack(pady=5)
 
-    submit_button = ttk.Button(container, text="Submit Password", command=submit_password)
-    submit_button.grid(row=6, column=0, columnspan=3, pady=20)
+    # Display previous keys at the bottom of the window
+    previous_keys_label = ttk.Label(root, text="Previous Keys:", font=("Arial", 14))
+    previous_keys_label.pack(pady=10)
+    
+    previous_keys_listbox = tk.Listbox(root, width=40, height=5, font=("Arial", 12))
+    previous_keys_listbox.pack(pady=5)
+
+    # Load and display previous keys
+    previous_keys = load_previous_keys(username)
+    for key in previous_keys:
+        previous_keys_listbox.insert(tk.END, key.strip())  # Insert each key into the listbox
+
+    # Toggle visibility of the key input
+    def toggle_password_visibility():
+        if password_entry.cget('show') == '*':
+            password_entry.config(show='')
+            confirm_password_entry.config(show='')
+        else:
+            password_entry.config(show='*')
+            confirm_password_entry.config(show='*')
+
+    # Toggle button for password visibility
+    toggle_button = ttk.Button(root, text="Show/Hide Key", command=toggle_password_visibility)
+    toggle_button.pack(pady=10)
+
+    # Button to use suggested password
+    use_suggested_button = ttk.Button(root, text="Use Suggested Key", command=use_suggested_key)
+    use_suggested_button.pack(pady=10)
+
+    # Submit key for initial setup
+    submit_button = ttk.Button(root, text="Submit Key", command=submit_key)
+    submit_button.pack(pady=20)
 
     root.mainloop()
-
-    return getattr(root, 'password', None)

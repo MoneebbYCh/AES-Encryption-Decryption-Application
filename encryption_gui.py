@@ -7,7 +7,7 @@ import os
 from encryption_module import AESCipher
 
 
-def create_encryption_gui(saved_password):
+def create_encryption_gui(saved_key):
     def select_file():
         file_path = filedialog.askopenfilename()
         if file_path:
@@ -40,7 +40,7 @@ def create_encryption_gui(saved_password):
             return
 
         try:
-            aes_cipher = AESCipher(saved_password)
+            aes_cipher = AESCipher(saved_key)  # Use the saved key
             encrypted_data = aes_cipher.encrypt_file(file_path, mode=encryption_type)
 
             # Prompt user to save encrypted file
@@ -59,7 +59,7 @@ def create_encryption_gui(saved_password):
             return
 
         try:
-            aes_cipher = AESCipher(saved_password)
+            aes_cipher = AESCipher(saved_key)  # Use the saved key
             encrypted_data = aes_cipher.load_encrypted_file(file_path)
             decrypted_data = aes_cipher.decrypt_file(encrypted_data)
 
@@ -84,8 +84,8 @@ def create_encryption_gui(saved_password):
     root.title("File Encryption and Decryption")
     root.geometry("800x600")
 
-    # Saved password label
-    password_label = tk.Label(root, text=f"Saved Password: {saved_password}", font=("Arial", 14))
+    # Saved password (key) label
+    password_label = tk.Label(root, text=f"Saved Key: {saved_key}", font=("Arial", 14))
     password_label.pack(pady=10)
 
     # File selection section
@@ -108,21 +108,22 @@ def create_encryption_gui(saved_password):
     # Text preview section for text-based files only
     file_preview_label = tk.Label(root, text="File Preview (Text Files Only):", font=("Arial", 12))
     file_preview_label.pack(pady=5)
-    file_preview_text = scrolledtext.ScrolledText(root, height=8, wrap=tk.WORD)
-    file_preview_text.pack(pady=5, padx=10, fill=tk.BOTH, expand=True)
+    file_preview_text = scrolledtext.ScrolledText(root, width=70, height=10, wrap=tk.WORD, font=("Arial", 10))
+    file_preview_text.pack()
 
     # Action buttons
-    action_frame = tk.Frame(root)
-    action_frame.pack(pady=10)
-    encrypt_button = tk.Button(action_frame, text="Encrypt File", command=encrypt_file)
-    encrypt_button.pack(side=tk.LEFT, padx=10)
-    decrypt_button = tk.Button(action_frame, text="Decrypt File", command=decrypt_file)
-    decrypt_button.pack(side=tk.LEFT, padx=10)
+    action_button_frame = tk.Frame(root)
+    action_button_frame.pack(pady=20)
 
-    # Operation backlog
-    backlog_label = tk.Label(root, text="Operation Backlog:", font=("Arial", 12))
-    backlog_label.pack(pady=5)
-    backlog_text = scrolledtext.ScrolledText(root, height=8, wrap=tk.WORD, state="normal")
-    backlog_text.pack(pady=5, padx=10, fill=tk.BOTH, expand=True)
+    encrypt_button = tk.Button(action_button_frame, text="Encrypt File", command=encrypt_file)
+    encrypt_button.grid(row=0, column=0, padx=10)
+
+    decrypt_button = tk.Button(action_button_frame, text="Decrypt File", command=decrypt_file)
+    decrypt_button.grid(row=0, column=1, padx=10)
+
+    # Backlog for showing logs
+    backlog_text = scrolledtext.ScrolledText(root, width=70, height=8, wrap=tk.WORD, font=("Arial", 10))
+    backlog_text.pack(pady=10)
 
     root.mainloop()
+

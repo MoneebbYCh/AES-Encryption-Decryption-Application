@@ -55,13 +55,13 @@ class AESCipher:
 
     @staticmethod
     def _pad(data):
-        # PKCS7 padding
+        #  padding
         padding_length = AES.block_size - len(data) % AES.block_size
         return data + bytes([padding_length] * padding_length)
 
     @staticmethod
     def _unpad(data):
-        # Remove PKCS7 padding
+        # Remove  padding
         padding_length = data[-1]
         if padding_length > AES.block_size or padding_length <= 0:
             raise ValueError("Invalid padding.")
