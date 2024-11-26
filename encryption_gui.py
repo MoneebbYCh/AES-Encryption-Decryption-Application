@@ -3,7 +3,6 @@ from tkinter import filedialog, ttk, scrolledtext
 from datetime import datetime
 import os
 
-# Import your encryption module
 from encryption_module import AESCipher
 
 
@@ -121,7 +120,7 @@ def create_encryption_gui(saved_key):
     decrypt_button = tk.Button(action_button_frame, text="Decrypt File", command=decrypt_file)
     decrypt_button.grid(row=0, column=1, padx=10)
 
-    # Backlog for showing logs
+    # Backlog 
     backlog_text = scrolledtext.ScrolledText(root, width=70, height=8, wrap=tk.WORD, font=("Arial", 10))
     backlog_text.pack(pady=10)
 

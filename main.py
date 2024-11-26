@@ -1,9 +1,8 @@
 import tkinter as tk
 from tkinter import messagebox
-from user_auth import authenticate_user, initialize_db, register_user, update_password  # Import update_password function
-# Remove the import of 'create_gui' here to avoid circular import
-from encryption_gui import create_encryption_gui  # Import the encryption GUI function
-from password_checker import check_password_strength, get_checklist  # Import password strength checker
+from user_auth import authenticate_user, initialize_db, register_user, update_password 
+from encryption_gui import create_encryption_gui  
+from password_checker import check_password_strength, get_checklist  
 
 def toggle_password_visibility(entry, button):
     # Toggle password visibility
@@ -30,7 +29,7 @@ def login():
     
     if authenticate_user(username, password):
         messagebox.showinfo("Login Success", "Welcome back!")
-        show_logout_view(username)  # Show logout button and hide login fields
+        show_logout_view(username) 
     else:
         messagebox.showerror("Login Failed", "Invalid username or password.")
 
@@ -70,8 +69,7 @@ def logout():
     encryption_button.pack_forget()
 
 def open_profile(username):
-    # Delay the import here to avoid circular dependency
-    from gui_module import create_gui  # Import here to prevent circular import
+    from gui_module import create_gui 
     # Pass the username and a function to handle the key set
     def on_key_set(key):
         # After the key is set, open the encryption GUI

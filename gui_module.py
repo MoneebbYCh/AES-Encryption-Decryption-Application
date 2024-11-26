@@ -64,11 +64,11 @@ def create_gui(username, on_password_set=None, on_key_set=None):
 
     # Create the main GUI window
     root = tk.Tk()
-    root.title(f"Profile - {username}")  # Show username in title bar
+    root.title(f"Profile - {username}") 
     root.geometry("800x600")
-    root.configure(bg="white")  # Set background color to white
+    root.configure(bg="white")
 
-    # GUI for setting, viewing, and updating key
+    # setting, viewing, and updating key
     header_label = tk.Label(root, text=f"Profile - {username}", font=("Helvetica", 24, "bold"), fg="black", bg="white")
     header_label.pack(pady=20)
 
@@ -89,7 +89,7 @@ def create_gui(username, on_password_set=None, on_key_set=None):
     checklist_label = ttk.Label(root, text="", font=("Arial", 12))
     checklist_label.pack(pady=5)
 
-    # Display previous keys at the bottom of the window
+    # Display previous keys
     previous_keys_label = ttk.Label(root, text="Previous Keys:", font=("Arial", 14))
     previous_keys_label.pack(pady=10)
     

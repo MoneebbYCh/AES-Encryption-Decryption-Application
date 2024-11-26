@@ -2,7 +2,7 @@ import re
 import random
 import string
 
-# Password Strength Checker Function
+
 def check_password_strength(password):
     # Criteria for checking the password strength
     length_criteria = len(password) >= 8
@@ -22,7 +22,7 @@ def check_password_strength(password):
     else:
         return "Weak"
 
-# Password Suggestion Feature
+# Password Suggestion 
 def suggest_password():
     length = 12
     password_characters = (
@@ -35,7 +35,7 @@ def suggest_password():
     random.shuffle(password_characters)
     return ''.join(password_characters)
 
-# Real-time checklist for GUI integration
+# Real-time checklist 
 def get_checklist(password):
     return [
         ("At least 8 characters", len(password) >= 8),
