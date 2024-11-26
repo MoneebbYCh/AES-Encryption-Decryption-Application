@@ -21,7 +21,8 @@ def create_gui(username, on_password_set=None, on_key_set=None):
             if on_key_set:  # If the key is set successfully, use the callback to pass the key.
                 on_key_set(key)
             
-            root.destroy()  # Close the profile setup window to transition to the encryption GUI
+            # Refresh the keys list
+            refresh_keys_list()
 
     def save_key_to_file(username, key):
         """Appends the key to the user's keys file."""
@@ -36,6 +37,13 @@ def create_gui(username, on_password_set=None, on_key_set=None):
             with open(file_path, 'r') as file:
                 return file.readlines()  # Read the keys from the file
         return []  # Return an empty list if no file exists
+
+    def refresh_keys_list():
+        """Refreshes the list of previous keys in the listbox."""
+        previous_keys_listbox.delete(0, tk.END)  # Clear current listbox content
+        previous_keys = load_previous_keys(username)
+        for key in previous_keys:
+            previous_keys_listbox.insert(tk.END, key.strip())  # Insert each key into the listbox
 
     def check_strength(event=None):
         key = password_entry.get()
@@ -89,9 +97,7 @@ def create_gui(username, on_password_set=None, on_key_set=None):
     previous_keys_listbox.pack(pady=5)
 
     # Load and display previous keys
-    previous_keys = load_previous_keys(username)
-    for key in previous_keys:
-        previous_keys_listbox.insert(tk.END, key.strip())  # Insert each key into the listbox
+    refresh_keys_list()
 
     # Toggle visibility of the key input
     def toggle_password_visibility():
@@ -113,5 +119,9 @@ def create_gui(username, on_password_set=None, on_key_set=None):
     # Submit key for initial setup
     submit_button = ttk.Button(root, text="Submit Key", command=submit_key)
     submit_button.pack(pady=20)
+
+    # Button to refresh keys list
+    refresh_button = ttk.Button(root, text="Refresh Backlog", command=refresh_keys_list)
+    refresh_button.pack(pady=10)
 
     root.mainloop()
